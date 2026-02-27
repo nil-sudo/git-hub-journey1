@@ -212,21 +212,17 @@ async def upload_file(file: UploadFile = File(...)):
 
     print(f"[UPLOAD] ✅ Asset saved locally: {file_path}")
     
-    # Try to upload to Supabase in the background (SILENTLY) if config exists
+    # Try to upload to Supabase synchronously (Vercel kills background tasks)
     if SUPABASE_URL and SUPABASE_SERVICE_KEY:
         try:
             import httpx
-            async def upload_bg():
-                async with httpx.AsyncClient(timeout=10.0) as client:
-                    up_url = f"{SUPABASE_URL}/storage/v1/object/{SUPABASE_BUCKET}/public/{unique_filename}"
-                    headers = {"Authorization": f"Bearer {SUPABASE_SERVICE_KEY}", "Content-Type": content_type, "x-upsert": "true"}
-                    await client.post(up_url, content=file_bytes, headers=headers)
-            
-            # We don't await this to keep response fast
-            import asyncio
-            asyncio.create_task(upload_bg())
-        except Exception:
-            pass
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                up_url = f"{SUPABASE_URL}/storage/v1/object/{SUPABASE_BUCKET}/public/{unique_filename}"
+                headers = {"Authorization": f"Bearer {SUPABASE_SERVICE_KEY}", "Content-Type": content_type, "x-upsert": "true"}
+                res = await client.post(up_url, content=file_bytes, headers=headers)
+                print(f"[Supabase] Upload status: {res.status_code}")
+        except Exception as e:
+            print(f"[Supabase] Upload failed: {e}")
 
     return {"image_url": f"uploads/{unique_filename}"}
 
