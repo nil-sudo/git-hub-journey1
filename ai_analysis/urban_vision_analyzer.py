@@ -6,9 +6,19 @@ from google.cloud import vision
 # --------------------------------------------------
 # SET GOOGLE CREDENTIALS (DO NOT COMMIT THIS FILE)
 # --------------------------------------------------
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.join(
-    os.path.dirname(__file__), "instant-sound-456709-j3-9eba69829a2b.json"
-)
+gcp_json = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+if gcp_json:
+    # Vercel deployment: Write the JSON string from env to a temp file
+    import tempfile
+    temp_creds = tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".json")
+    temp_creds.write(gcp_json)
+    temp_creds.close()
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_creds.name
+else:
+    # Local development: Use the local file
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.join(
+        os.path.dirname(__file__), "instant-sound-456709-j3-9eba69829a2b.json"
+    )
 
 # --------------------------------------------------
 # LOGGING SETUP
