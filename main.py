@@ -27,7 +27,7 @@ AI_DEPARTMENT_MAPPING = {
 load_dotenv()
 
 # Supabase config from env (with hardcoded fallbacks for local dev/Vercel)
-SUPABASE_URL = os.getenv("SUPABASE_URL", "https://vzvyjryvryggevkuumhm.supabase.co")
+SUPABASE_URL = os.getenv("SUPABASE_URL", "")
 # SECURITY: We cannot push the raw Service Key to GitHub. 
 # You MUST add 'SUPABASE_SERVICE_KEY' to your Vercel Environment Variables in the deployed project settings.
 SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY", "INSERT_SERVICE_KEY_ON_VERCEL")
